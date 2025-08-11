@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Ukrainian Community Winnipeg - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Welcome to 
+                        <span class="text-primary">Ukrainian Winnipeg</span>
+                    </h1>
+                    <p class="lead mb-4">Your comprehensive guide to Ukrainian community resources, language support, and cultural heritage in Winnipeg. Connect, learn, and thrive in your new home.</p>
+                    
+                    <div class="hero-actions">
+                        <a href="{{ url_for('translator') }}" class="btn btn-primary btn-lg me-3 mb-2">
+                            <i data-feather="mic" class="me-2"></i>
+                            Start Translating
+                        </a>
+                        <a href="{{ url_for('resources') }}" class="btn btn-outline-primary btn-lg mb-2">
+                            <i data-feather="info" class="me-2"></i>
+                            Find Resources
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="feature-cards-stack">
+                        <div class="feature-card floating-card-1">
+                            <i data-feather="mic" class="feature-icon text-primary"></i>
+                            <h5>Voice Translation</h5>
+                            <p>Speak in Ukrainian, hear in English</p>
+                        </div>
+                        <div class="feature-card floating-card-2">
+                            <i data-feather="users" class="feature-icon text-success"></i>
+                            <h5>Community</h5>
+                            <p>Connect with local Ukrainian organizations</p>
+                        </div>
+                        <div class="feature-card floating-card-3">
+                            <i data-feather="book-open" class="feature-icon text-warning"></i>
+                            <h5>Learn English</h5>
+                            <p>Interactive lessons and practice</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Access Section -->
+<section class="quick-access-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Quick Access Tools</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="quick-access-card h-100">
+                    <div class="quick-access-icon">
+                        <i data-feather="mic"></i>
+                    </div>
+                    <h5>Voice Translator</h5>
+                    <p>Instant Ukrainian to English translation with speech recognition</p>
+                    <a href="{{ url_for('translator') }}" class="btn btn-primary">
+                        Try Now <i data-feather="arrow-right" class="ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="quick-access-card h-100">
+                    <div class="quick-access-icon">
+                        <i data-feather="phone"></i>
+                    </div>
+                    <h5>Emergency Phrases</h5>
+                    <p>Essential emergency phrases for immediate situations</p>
+                    <a href="{{ url_for('translator') }}?category=emergency" class="btn btn-danger">
+                        Emergency Help <i data-feather="arrow-right" class="ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="quick-access-card h-100">
+                    <div class="quick-access-icon">
+                        <i data-feather="heart"></i>
+                    </div>
+                    <h5>Healthcare Guide</h5>
+                    <p>Healthcare phrases and resource information</p>
+                    <a href="{{ url_for('translator') }}?category=healthcare" class="btn btn-success">
+                        Health Help <i data-feather="arrow-right" class="ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="quick-access-card h-100">
+                    <div class="quick-access-icon">
+                        <i data-feather="briefcase"></i>
+                    </div>
+                    <h5>Government Services</h5>
+                    <p>Essential phrases for government offices and services</p>
+                    <a href="{{ url_for('translator') }}?category=government" class="btn btn-info">
+                        Get Help <i data-feather="arrow-right" class="ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Content Sections -->
+<section class="featured-content py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <!-- Community Preview -->
+            <div class="col-lg-4 mb-4">
+                <div class="featured-section-card h-100">
+                    <div class="featured-section-header">
+                        <i data-feather="users" class="section-icon"></i>
+                        <h3>Community</h3>
+                    </div>
+                    <div class="featured-section-content">
+                        {% if featured_community %}
+                            {% for item in featured_community %}
+                                <div class="featured-item">
+                                    <h6>{{ item.title }}</h6>
+                                    <p class="text-muted small">{{ item.content[:100] }}...</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">Discover Ukrainian organizations, cultural centers, and community groups in Winnipeg.</p>
+                        {% endif %}
+                    </div>
+                    <div class="featured-section-footer">
+                        <a href="{{ url_for('community') }}" class="btn btn-outline-primary">
+                            Explore Community <i data-feather="arrow-right" class="ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heritage Preview -->
+            <div class="col-lg-4 mb-4">
+                <div class="featured-section-card h-100">
+                    <div class="featured-section-header">
+                        <i data-feather="archive" class="section-icon"></i>
+                        <h3>Heritage</h3>
+                    </div>
+                    <div class="featured-section-content">
+                        {% if featured_heritage %}
+                            {% for item in featured_heritage %}
+                                <div class="featured-item">
+                                    <h6>{{ item.title }}</h6>
+                                    <p class="text-muted small">{{ item.content[:100] }}...</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">Learn about Ukrainian history, culture, and traditions in Manitoba.</p>
+                        {% endif %}
+                    </div>
+                    <div class="featured-section-footer">
+                        <a href="{{ url_for('heritage') }}" class="btn btn-outline-primary">
+                            Explore Heritage <i data-feather="arrow-right" class="ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Preview -->
+            <div class="col-lg-4 mb-4">
+                <div class="featured-section-card h-100">
+                    <div class="featured-section-header">
+                        <i data-feather="calendar" class="section-icon"></i>
+                        <h3>Upcoming Events</h3>
+                    </div>
+                    <div class="featured-section-content">
+                        {% if recent_events %}
+                            {% for event in recent_events %}
+                                <div class="featured-item">
+                                    <h6>{{ event.title }}</h6>
+                                    <p class="text-muted small">
+                                        <i data-feather="calendar" class="me-1"></i>
+                                        {{ event.date.strftime('%B %d, %Y') }}
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">Stay updated with Ukrainian community events, festivals, and cultural activities.</p>
+                        {% endif %}
+                    </div>
+                    <div class="featured-section-footer">
+                        <a href="{{ url_for('events') }}" class="btn btn-outline-primary">
+                            View All Events <i data-feather="arrow-right" class="ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Learning Path Section -->
+<section class="learning-path py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="mb-4">Start Your Learning Journey</h2>
+                <p class="lead mb-4">From basic greetings to complex conversations, our structured lessons help you master English while preserving your Ukrainian heritage.</p>
+                
+                <div class="learning-stats">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="stat-number">500+</div>
+                                <div class="stat-label">Essential Phrases</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-item">
+                                <div class="stat-number">10+</div>
+                                <div class="stat-label">Categories</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('lessons') }}" class="btn btn-primary btn-lg mt-4">
+                    <i data-feather="play-circle" class="me-2"></i>
+                    Start Learning
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div class="learning-visual">
+                    <div class="progress-rings">
+                        <div class="progress-ring beginner">
+                            <div class="progress-ring-content">
+                                <i data-feather="smile"></i>
+                                <span>Beginner</span>
+                            </div>
+                        </div>
+                        <div class="progress-ring intermediate">
+                            <div class="progress-ring-content">
+                                <i data-feather="trending-up"></i>
+                                <span>Intermediate</span>
+                            </div>
+                        </div>
+                        <div class="progress-ring advanced">
+                            <div class="progress-ring-content">
+                                <i data-feather="award"></i>
+                                <span>Advanced</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Simple animations for floating cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const floatingCards = document.querySelectorAll('[class*="floating-card"]');
+        
+        floatingCards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.2}s`;
+        });
+    });
+</script>
+{% endblock %}

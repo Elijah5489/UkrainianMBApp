@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+
+{% block title %}Resources - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i data-feather="info" class="me-3"></i>
+                Newcomer Resources
+            </h1>
+            <p class="lead">Essential resources and services to help Ukrainian newcomers navigate life in Winnipeg. From government services to healthcare, education, and employment support.</p>
+        </div>
+    </div>
+
+    <!-- Quick Emergency Info -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="emergency-info-card">
+                <div class="emergency-header">
+                    <h3>
+                        <i data-feather="phone-call" class="me-2 text-danger"></i>
+                        Emergency Information
+                    </h3>
+                </div>
+                <div class="emergency-content">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="emergency-item">
+                                <h5>Emergency Services</h5>
+                                <p class="emergency-number">
+                                    <i data-feather="phone" class="me-1"></i>
+                                    <a href="tel:911">911</a>
+                                </p>
+                                <p class="text-muted">Police, Fire, Ambulance</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="emergency-item">
+                                <h5>Health Links</h5>
+                                <p class="emergency-number">
+                                    <i data-feather="phone" class="me-1"></i>
+                                    <a href="tel:204-788-8200">204-788-8200</a>
+                                </p>
+                                <p class="text-muted">24/7 Health Information</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="emergency-item">
+                                <h5>Crisis Helpline</h5>
+                                <p class="emergency-number">
+                                    <i data-feather="phone" class="me-1"></i>
+                                    <a href="tel:204-786-8686">204-786-8686</a>
+                                </p>
+                                <p class="text-muted">Mental Health Support</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="filter-section">
+                <h5 class="mb-3">Browse by Category</h5>
+                <div class="category-filters">
+                    <a href="{{ url_for('resources', category='all') }}" 
+                       class="btn btn-outline-primary category-btn {{ 'active' if selected_category == 'all' else '' }}">
+                        All Resources
+                    </a>
+                    {% for category in categories %}
+                    <a href="{{ url_for('resources', category=category) }}" 
+                       class="btn btn-outline-primary category-btn {{ 'active' if selected_category == category else '' }}">
+                        {{ category.replace('_', ' ').title() }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resources Grid -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% if resources %}
+                <div class="resources-grid">
+                    {% for resource in resources %}
+                    <div class="resource-card" data-category="{{ resource.category }}">
+                        <div class="resource-card-header">
+                            <div class="resource-meta">
+                                <span class="category-badge badge bg-primary">{{ resource.category.replace('_', ' ').title() }}</span>
+                            </div>
+                            <h4>{{ resource.title }}</h4>
+                        </div>
+                        
+                        <div class="resource-card-content">
+                            {% if resource.description %}
+                            <p class="resource-description">{{ resource.description }}</p>
+                            {% endif %}
+                            
+                            <div class="contact-details">
+                                {% if resource.address %}
+                                <div class="contact-item">
+                                    <i data-feather="map-pin" class="me-2"></i>
+                                    <span>{{ resource.address }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if resource.phone %}
+                                <div class="contact-item">
+                                    <i data-feather="phone" class="me-2"></i>
+                                    <a href="tel:{{ resource.phone }}">{{ resource.phone }}</a>
+                                </div>
+                                {% endif %}
+                                
+                                {% if resource.website %}
+                                <div class="contact-item">
+                                    <i data-feather="globe" class="me-2"></i>
+                                    <a href="{{ resource.website }}" target="_blank" rel="noopener">Visit Website</a>
+                                </div>
+                                {% endif %}
+                                
+                                {% if resource.hours %}
+                                <div class="contact-item">
+                                    <i data-feather="clock" class="me-2"></i>
+                                    <span>{{ resource.hours }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if resource.contact_info %}
+                            <div class="additional-info">
+                                <h6>Additional Information:</h6>
+                                <p class="text-muted small">{{ resource.contact_info }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="resource-card-footer">
+                            <div class="resource-actions">
+                                {% if resource.phone %}
+                                <a href="tel:{{ resource.phone }}" class="btn btn-primary btn-sm">
+                                    <i data-feather="phone" class="me-1"></i>
+                                    Call
+                                </a>
+                                {% endif %}
+                                {% if resource.website %}
+                                <a href="{{ resource.website }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">
+                                    <i data-feather="external-link" class="me-1"></i>
+                                    Visit
+                                </a>
+                                {% endif %}
+                                <button class="btn btn-outline-secondary btn-sm" onclick="shareResource('{{ resource.title }}')">
+                                    <i data-feather="share-2" class="me-1"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state text-center py-5">
+                    <i data-feather="info" class="empty-icon"></i>
+                    <h4>No Resources Found</h4>
+                    <p class="text-muted">
+                        {% if selected_category != 'all' %}
+                            No resources found in the "{{ selected_category.replace('_', ' ').title() }}" category.
+                        {% else %}
+                            Resource information is being compiled and will be available soon.
+                        {% endif %}
+                    </p>
+                    {% if selected_category != 'all' %}
+                    <a href="{{ url_for('resources', category='all') }}" class="btn btn-primary">
+                        View All Resources
+                    </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Resource Categories Guide -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="resource-guide">
+                <h4 class="mb-4 text-center">Resource Categories Guide</h4>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <i data-feather="file-text"></i>
+                            </div>
+                            <h5>Government Services</h5>
+                            <p>Immigration, social insurance, health cards, and other essential government services.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <i data-feather="heart"></i>
+                            </div>
+                            <h5>Healthcare</h5>
+                            <p>Hospitals, clinics, mental health services, and finding a family doctor.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <i data-feather="book-open"></i>
+                            </div>
+                            <h5>Education</h5>
+                            <p>Schools, language training, adult education, and credential recognition.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <i data-feather="briefcase"></i>
+                            </div>
+                            <h5>Employment</h5>
+                            <p>Job search resources, employment centers, and workplace rights.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <i data-feather="home"></i>
+                            </div>
+                            <h5>Housing</h5>
+                            <p>Finding rental properties, understanding tenant rights, and housing support.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="guide-card">
+                            <div class="guide-icon">
+                                <i data-feather="shield"></i>
+                            </div>
+                            <h5>Legal Services</h5>
+                            <p>Legal aid, immigration lawyers, and understanding Canadian law.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Getting Started Checklist -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="getting-started-section">
+                <h4 class="mb-4">New to Winnipeg? Start Here</h4>
+                <div class="checklist-container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Essential First Steps</h6>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="sin" class="checklist-checkbox">
+                                    <label for="sin">Apply for Social Insurance Number (SIN)</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="health" class="checklist-checkbox">
+                                    <label for="health">Register for Manitoba Health Card</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="bank" class="checklist-checkbox">
+                                    <label for="bank">Open a bank account</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="library" class="checklist-checkbox">
+                                    <label for="library">Get a library card</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="transit" class="checklist-checkbox">
+                                    <label for="transit">Learn about public transportation</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Important Services</h6>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="doctor" class="checklist-checkbox">
+                                    <label for="doctor">Find a family doctor</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="school" class="checklist-checkbox">
+                                    <label for="school">Enroll children in school</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="english" class="checklist-checkbox">
+                                    <label for="english">Register for English classes</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="community" class="checklist-checkbox">
+                                    <label for="community">Connect with Ukrainian community</label>
+                                </div>
+                                <div class="checklist-item">
+                                    <input type="checkbox" id="settlement" class="checklist-checkbox">
+                                    <label for="settlement">Contact settlement services</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Resource CTA -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="add-resource-cta">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4>Know a Helpful Resource?</h4>
+                        <p class="lead">Help other newcomers by sharing information about useful services and organizations.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('admin') }}" class="btn btn-primary btn-lg">
+                            <i data-feather="plus" class="me-2"></i>
+                            Add Resource
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function shareResource(title) {
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: `Check out this helpful resource: ${title}`,
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        // Fallback: copy to clipboard
+        const url = window.location.href;
+        navigator.clipboard.writeText(`${title} - ${url}`).then(() => {
+            showToast('Link copied to clipboard!');
+        });
+    }
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 5px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Save checklist progress
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.checklist-checkbox');
+    
+    // Load saved progress
+    checkboxes.forEach(checkbox => {
+        const saved = localStorage.getItem(`checklist_${checkbox.id}`);
+        if (saved === 'true') {
+            checkbox.checked = true;
+        }
+    });
+    
+    // Save progress on change
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            localStorage.setItem(`checklist_${this.id}`, this.checked);
+        });
+    });
+});
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Lesson Header -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('lessons') }}">Lessons</a></li>
+                    <li class="breadcrumb-item active">{{ lesson.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="lesson-header-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="lesson-badge">
+                            <span class="badge bg-{{ 'success' if lesson.level == 'beginner' else 'warning' if lesson.level == 'intermediate' else 'info' }}">
+                                {{ lesson.level.title() }}
+                            </span>
+                        </div>
+                        <h1 class="lesson-title">{{ lesson.title }}</h1>
+                        <p class="lesson-description">{{ lesson.description }}</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="lesson-stats">
+                            <div class="stat-item">
+                                <i data-feather="clock" class="me-1"></i>
+                                <span>15-20 min</span>
+                            </div>
+                            <div class="stat-item">
+                                <i data-feather="bar-chart-2" class="me-1"></i>
+                                <span>{{ lesson.level.title() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lesson Content -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="lesson-content-card">
+                <div class="lesson-content">
+                    {{ lesson.content | safe }}
+                </div>
+                
+                {% if lesson.level == 'beginner' and 'alphabet' in lesson.title.lower() %}
+                <!-- Interactive Alphabet Practice -->
+                <div class="interactive-section mt-4">
+                    <h4>Interactive Practice</h4>
+                    <div class="alphabet-practice">
+                        <div class="practice-controls mb-3">
+                            <button id="playAllBtn" class="btn btn-primary me-2">
+                                <i data-feather="play" class="me-1"></i>
+                                Play All
+                            </button>
+                            <button id="randomPracticeBtn" class="btn btn-outline-primary">
+                                <i data-feather="shuffle" class="me-1"></i>
+                                Random Practice
+                            </button>
+                        </div>
+                        <div id="alphabetGrid" class="alphabet-practice-grid">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if 'greetings' in lesson.title.lower() %}
+                <!-- Interactive Greeting Practice -->
+                <div class="interactive-section mt-4">
+                    <h4>Practice Conversations</h4>
+                    <div class="conversation-practice">
+                        <div class="conversation-scenario">
+                            <h5>Scenario: Meeting Someone New</h5>
+                            <div class="conversation-steps">
+                                <div class="conversation-step">
+                                    <div class="speaker">You:</div>
+                                    <div class="dialogue">
+                                        <button class="play-btn" data-text="Hello, how are you?">
+                                            <i data-feather="play"></i>
+                                        </button>
+                                        "Hello, how are you?"
+                                    </div>
+                                </div>
+                                <div class="conversation-step">
+                                    <div class="speaker">Other person:</div>
+                                    <div class="dialogue">
+                                        <button class="play-btn" data-text="I'm fine, thank you. How about you?">
+                                            <i data-feather="play"></i>
+                                        </button>
+                                        "I'm fine, thank you. How about you?"
+                                    </div>
+                                </div>
+                                <div class="conversation-step">
+                                    <div class="speaker">You:</div>
+                                    <div class="dialogue">
+                                        <button class="play-btn" data-text="I'm doing well, thanks for asking">
+                                            <i data-feather="play"></i>
+                                        </button>
+                                        "I'm doing well, thanks for asking"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="practice-mode mt-4">
+                            <h6>Practice Mode</h6>
+                            <p>Click the microphone and repeat the phrases. The system will help you with pronunciation.</p>
+                            <button id="startConversationPractice" class="btn btn-success">
+                                <i data-feather="mic" class="me-1"></i>
+                                Start Speaking Practice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="lesson-navigation">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="{{ url_for('lessons') }}" class="btn btn-outline-secondary">
+                            <i data-feather="arrow-left" class="me-1"></i>
+                            Back to Lessons
+                        </a>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button id="completeLesson" class="btn btn-success">
+                            Mark as Complete
+                            <i data-feather="check" class="ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Practice Feedback Modal -->
+<div class="modal fade" id="practiceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Practice Feedback</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="practiceResult">
+                    <!-- Practice results will be shown here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="tryAgain()">Try Again</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize lesson interactions
+    initializeLessonFeatures();
+});
+
+function initializeLessonFeatures() {
+    // Initialize alphabet practice if present
+    if (document.getElementById('alphabetGrid')) {
+        initializeAlphabetPractice();
+    }
+    
+    // Initialize conversation practice
+    initializeConversationPractice();
+    
+    // Initialize audio playback for all play buttons
+    initializeAudioPlayback();
+}
+
+function initializeAlphabetPractice() {
+    const alphabetLetters = [
+        {letter: 'А а', sound: 'a in father'},
+        {letter: 'Б б', sound: 'b in boy'},
+        {letter: 'В в', sound: 'v in very'},
+        // Add more letters as needed
+    ];
+    
+    const grid = document.getElementById('alphabetGrid');
+    alphabetLetters.forEach(item => {
+        const letterCard = document.createElement('div');
+        letterCard.className = 'letter-practice-card';
+        letterCard.innerHTML = `
+            <div class="letter">${item.letter}</div>
+            <div class="sound">${item.sound}</div>
+            <button class="practice-letter-btn" data-letter="${item.letter}">
+                <i data-feather="volume-2"></i>
+            </button>
+        `;
+        grid.appendChild(letterCard);
+    });
+    
+    // Re-initialize feather icons
+    feather.replace();
+}
+
+function initializeConversationPractice() {
+    const startBtn = document.getElementById('startConversationPractice');
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            if ('speechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                startSpeechPractice();
+            } else {
+                alert('Speech recognition is not supported in your browser. Please try using Chrome or Edge.');
+            }
+        });
+    }
+}
+
+function initializeAudioPlayback() {
+    const playButtons = document.querySelectorAll('.play-btn');
+    playButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const text = this.getAttribute('data-text');
+            speakText(text);
+        });
+    });
+}
+
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        speechSynthesis.speak(utterance);
+    }
+}
+
+function startSpeechPractice() {
+    const phrases = [
+        "Hello, how are you?",
+        "I'm fine, thank you",
+        "Nice to meet you",
+        "Have a good day"
+    ];
+    
+    let currentPhrase = 0;
+    
+    function practicePhrase() {
+        if (currentPhrase >= phrases.length) {
+            showPracticeComplete();
+            return;
+        }
+        
+        const phrase = phrases[currentPhrase];
+        speakText(`Please repeat: ${phrase}`);
+        
+        setTimeout(() => {
+            startListening(phrase, () => {
+                currentPhrase++;
+                practicePhrase();
+            });
+        }, 2000);
+    }
+    
+    practicePhrase();
+}
+
+function startListening(expectedPhrase, callback) {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    
+    recognition.onresult = function(event) {
+        const spokenText = event.results[0][0].transcript.toLowerCase();
+        const expected = expectedPhrase.toLowerCase();
+        
+        // Simple similarity check
+        const similarity = calculateSimilarity(spokenText, expected);
+        
+        showPracticeFeedback(spokenText, expectedPhrase, similarity);
+        
+        setTimeout(callback, 2000);
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        speakText('Please try again');
+        setTimeout(callback, 1000);
+    };
+    
+    recognition.start();
+}
+
+function calculateSimilarity(text1, text2) {
+    // Simple word-based similarity
+    const words1 = text1.split(' ');
+    const words2 = text2.split(' ');
+    
+    let matches = 0;
+    words1.forEach(word => {
+        if (words2.includes(word)) {
+            matches++;
+        }
+    });
+    
+    return matches / Math.max(words1.length, words2.length);
+}
+
+function showPracticeFeedback(spoken, expected, similarity) {
+    const modal = new bootstrap.Modal(document.getElementById('practiceModal'));
+    const result = document.getElementById('practiceResult');
+    
+    let feedback = '';
+    if (similarity > 0.7) {
+        feedback = `<div class="alert alert-success">
+            <h6>Great job!</h6>
+            <p>You said: "${spoken}"</p>
+            <p>Expected: "${expected}"</p>
+        </div>`;
+    } else {
+        feedback = `<div class="alert alert-warning">
+            <h6>Good try!</h6>
+            <p>You said: "${spoken}"</p>
+            <p>Expected: "${expected}"</p>
+            <p>Keep practicing!</p>
+        </div>`;
+    }
+    
+    result.innerHTML = feedback;
+    modal.show();
+}
+
+function showPracticeComplete() {
+    const modal = new bootstrap.Modal(document.getElementById('practiceModal'));
+    const result = document.getElementById('practiceResult');
+    
+    result.innerHTML = `
+        <div class="alert alert-success text-center">
+            <h4><i data-feather="award" class="me-2"></i>Practice Complete!</h4>
+            <p>Excellent work on completing the conversation practice.</p>
+        </div>
+    `;
+    
+    feather.replace();
+    modal.show();
+}
+
+function tryAgain() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('practiceModal'));
+    modal.hide();
+    startSpeechPractice();
+}
+
+// Complete lesson functionality
+document.getElementById('completeLesson')?.addEventListener('click', function() {
+    this.innerHTML = '<i data-feather="check" class="me-1"></i>Completed!';
+    this.classList.remove('btn-success');
+    this.classList.add('btn-success', 'disabled');
+    feather.replace();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i data-feather="settings" class="me-3"></i>
+                Content Management
+            </h1>
+            <p class="lead">Add and manage content for the Ukrainian community app. Help build this resource for newcomers.</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="admin-nav">
+                <ul class="nav nav-pills justify-content-center" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="translations-tab" data-bs-toggle="pill" data-bs-target="#translations" type="button" role="tab">
+                            <i data-feather="message-circle" class="me-1"></i>
+                            Translations
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="lessons-tab" data-bs-toggle="pill" data-bs-target="#lessons" type="button" role="tab">
+                            <i data-feather="book-open" class="me-1"></i>
+                            Lessons
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="community-tab" data-bs-toggle="pill" data-bs-target="#community" type="button" role="tab">
+                            <i data-feather="users" class="me-1"></i>
+                            Community
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="heritage-tab" data-bs-toggle="pill" data-bs-target="#heritage" type="button" role="tab">
+                            <i data-feather="archive" class="me-1"></i>
+                            Heritage
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="events-tab" data-bs-toggle="pill" data-bs-target="#events" type="button" role="tab">
+                            <i data-feather="calendar" class="me-1"></i>
+                            Events
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="resources-tab" data-bs-toggle="pill" data-bs-target="#resources" type="button" role="tab">
+                            <i data-feather="info" class="me-1"></i>
+                            Resources
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="tab-content" id="adminTabContent">
+                
+                <!-- Translations Tab -->
+                <div class="tab-pane fade show active" id="translations" role="tabpanel">
+                    <div class="admin-section">
+                        <h3 class="mb-4">Add Translation</h3>
+                        <form id="translationForm" class="admin-form">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="ukrainian" class="form-label">Ukrainian Text</label>
+                                    <input type="text" class="form-control" id="ukrainian" name="ukrainian" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="english" class="form-label">English Translation</label>
+                                    <input type="text" class="form-control" id="english" name="english" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pronunciation" class="form-label">Pronunciation Guide</label>
+                                    <input type="text" class="form-control" id="pronunciation" name="pronunciation" placeholder="Phonetic pronunciation">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="greetings">Greetings</option>
+                                        <option value="emergency">Emergency</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="government">Government Services</option>
+                                        <option value="employment">Employment</option>
+                                        <option value="housing">Housing</option>
+                                        <option value="education">Education</option>
+                                        <option value="transportation">Transportation</option>
+                                        <option value="shopping">Shopping</option>
+                                        <option value="conversation">Basic Conversation</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="subcategory" class="form-label">Subcategory</label>
+                                    <input type="text" class="form-control" id="subcategory" name="subcategory" placeholder="Optional subcategory">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="difficulty" class="form-label">Difficulty Level</label>
+                                    <select class="form-select" id="difficulty" name="difficulty">
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-1"></i>
+                                        Add Translation
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lessons Tab -->
+                <div class="tab-pane fade" id="lessons" role="tabpanel">
+                    <div class="admin-section">
+                        <h3 class="mb-4">Add Lesson</h3>
+                        <form id="lessonForm" class="admin-form">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="lessonTitle" class="form-label">Lesson Title</label>
+                                    <input type="text" class="form-control" id="lessonTitle" name="title" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="lessonLevel" class="form-label">Level</label>
+                                    <select class="form-select" id="lessonLevel" name="level" required>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="lessonDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="lessonDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label for="lessonContent" class="form-label">Content (HTML allowed)</label>
+                                    <textarea class="form-control" id="lessonContent" name="content" rows="8" required></textarea>
+                                    <div class="form-text">You can use HTML tags for formatting: &lt;h3&gt;, &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lessonOrder" class="form-label">Order Index</label>
+                                    <input type="number" class="form-control" id="lessonOrder" name="order_index" value="0" min="0">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-1"></i>
+                                        Add Lesson
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Community Tab -->
+                <div class="tab-pane fade" id="community" role="tabpanel">
+                    <div class="admin-section">
+                        <h3 class="mb-4">Add Community Organization</h3>
+                        <form id="communityForm" class="admin-form">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="orgTitle" class="form-label">Organization Name</label>
+                                    <input type="text" class="form-control" id="orgTitle" name="title" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="orgCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="orgCategory" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="cultural_centers">Cultural Centers</option>
+                                        <option value="religious">Religious Organizations</option>
+                                        <option value="organizations">Community Organizations</option>
+                                        <option value="businesses">Ukrainian Businesses</option>
+                                        <option value="media">Media</option>
+                                        <option value="sports">Sports & Recreation</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="orgContent" class="form-label">Description</label>
+                                    <textarea class="form-control" id="orgContent" name="content" rows="4" required></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="orgAddress" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="orgAddress" name="address">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="orgPhone" class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="orgPhone" name="phone">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="orgWebsite" class="form-label">Website</label>
+                                    <input type="url" class="form-control" id="orgWebsite" name="website" placeholder="https://">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="orgContact" class="form-label">Additional Contact Info</label>
+                                    <input type="text" class="form-control" id="orgContact" name="contact_info">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-1"></i>
+                                        Add Organization
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Heritage Tab -->
+                <div class="tab-pane fade" id="heritage" role="tabpanel">
+                    <div class="admin-section">
+                        <h3 class="mb-4">Add Heritage Information</h3>
+                        <form id="heritageForm" class="admin-form">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="heritageTitle" class="form-label">Title</label>
+                                    <input type="text" class="form-control" id="heritageTitle" name="title" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="heritageCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="heritageCategory" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="history">History</option>
+                                        <option value="culture">Culture</option>
+                                        <option value="architecture">Architecture</option>
+                                        <option value="people">Notable People</option>
+                                        <option value="traditions">Traditions</option>
+                                        <option value="language">Language</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="heritageContent" class="form-label">Content</label>
+                                    <textarea class="form-control" id="heritageContent" name="content" rows="6" required></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="heritagePeriod" class="form-label">Historical Period</label>
+                                    <input type="text" class="form-control" id="heritagePeriod" name="historical_period" placeholder="e.g., 1890s-1920s">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-1"></i>
+                                        Add Heritage Info
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Events Tab -->
+                <div class="tab-pane fade" id="events" role="tabpanel">
+                    <div class="admin-section">
+                        <h3 class="mb-4">Add Event</h3>
+                        <form id="eventForm" class="admin-form">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="eventTitle" class="form-label">Event Title</label>
+                                    <input type="text" class="form-control" id="eventTitle" name="title" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="eventCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="eventCategory" name="category">
+                                        <option value="">Select Category</option>
+                                        <option value="cultural">Cultural</option>
+                                        <option value="educational">Educational</option>
+                                        <option value="religious">Religious</option>
+                                        <option value="social">Social</option>
+                                        <option value="business">Business</option>
+                                        <option value="sports">Sports</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="eventDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="eventDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="eventDate" class="form-label">Date & Time</label>
+                                    <input type="datetime-local" class="form-control" id="eventDate" name="date" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="eventLocation" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="eventLocation" name="location">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="eventOrganizer" class="form-label">Organizer</label>
+                                    <input type="text" class="form-control" id="eventOrganizer" name="organizer">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="eventContact" class="form-label">Contact Information</label>
+                                    <input type="text" class="form-control" id="eventContact" name="contact_info">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-1"></i>
+                                        Add Event
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Resources Tab -->
+                <div class="tab-pane fade" id="resources" role="tabpanel">
+                    <div class="admin-section">
+                        <h3 class="mb-4">Add Resource</h3>
+                        <form id="resourceForm" class="admin-form">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="resourceTitle" class="form-label">Resource Title</label>
+                                    <input type="text" class="form-control" id="resourceTitle" name="title" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="resourceCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="resourceCategory" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="government">Government Services</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="employment">Employment</option>
+                                        <option value="housing">Housing</option>
+                                        <option value="legal">Legal Services</option>
+                                        <option value="financial">Financial Services</option>
+                                        <option value="transportation">Transportation</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="resourceDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="resourceDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="resourceAddress" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="resourceAddress" name="address">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="resourcePhone" class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="resourcePhone" name="phone">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="resourceWebsite" class="form-label">Website</label>
+                                    <input type="url" class="form-control" id="resourceWebsite" name="website" placeholder="https://">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="resourceHours" class="form-label">Hours of Operation</label>
+                                    <input type="text" class="form-control" id="resourceHours" name="hours" placeholder="e.g., Mon-Fri 9AM-5PM">
+                                </div>
+                                <div class="col-12">
+                                    <label for="resourceContactInfo" class="form-label">Additional Contact Information</label>
+                                    <textarea class="form-control" id="resourceContactInfo" name="contact_info" rows="2"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-feather="plus" class="me-1"></i>
+                                        Add Resource
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="adminMessages" class="mt-4"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize feather icons
+    feather.replace();
+    
+    // Handle form submissions
+    const forms = ['translationForm', 'lessonForm', 'communityForm', 'heritageForm', 'eventForm', 'resourceForm'];
+    
+    forms.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm(formId);
+            });
+        }
+    });
+});
+
+function submitForm(formId) {
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
+    submitBtn.disabled = true;
+    
+    // Simulate form submission (in real app, this would be an actual API call)
+    setTimeout(() => {
+        // Reset form
+        form.reset();
+        
+        // Reset button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        // Show success message
+        showMessage('Content added successfully!', 'success');
+        
+        // Re-initialize feather icons
+        feather.replace();
+    }, 1000);
+}
+
+function showMessage(message, type) {
+    const messagesContainer = document.getElementById('adminMessages');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    messagesContainer.appendChild(alert);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+// Tab switching with feather icon refresh
+document.addEventListener('shown.bs.tab', function (event) {
+    feather.replace();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Events - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i data-feather="calendar" class="me-3"></i>
+                Community Events
+            </h1>
+            <p class="lead">Stay connected with Ukrainian community events, festivals, cultural activities, and educational programs in Winnipeg and Manitoba.</p>
+        </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    {% if upcoming_events %}
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="events-section">
+                <h3 class="section-title">
+                    <i data-feather="clock" class="me-2"></i>
+                    Upcoming Events
+                </h3>
+                <div class="events-grid">
+                    {% for event in upcoming_events %}
+                    <div class="event-card upcoming-event">
+                        <div class="event-date">
+                            <div class="date-day">{{ event.date.strftime('%d') }}</div>
+                            <div class="date-month">{{ event.date.strftime('%b') }}</div>
+                            <div class="date-year">{{ event.date.strftime('%Y') }}</div>
+                        </div>
+                        
+                        <div class="event-content">
+                            <div class="event-header">
+                                {% if event.category %}
+                                <span class="event-category badge bg-primary">{{ event.category.title() }}</span>
+                                {% endif %}
+                                <h4>{{ event.title }}</h4>
+                            </div>
+                            
+                            <div class="event-details">
+                                {% if event.description %}
+                                <p class="event-description">{{ event.description }}</p>
+                                {% endif %}
+                                
+                                <div class="event-meta">
+                                    <div class="meta-item">
+                                        <i data-feather="calendar" class="me-1"></i>
+                                        <span>{{ event.date.strftime('%A, %B %d, %Y at %I:%M %p') }}</span>
+                                    </div>
+                                    
+                                    {% if event.location %}
+                                    <div class="meta-item">
+                                        <i data-feather="map-pin" class="me-1"></i>
+                                        <span>{{ event.location }}</span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if event.organizer %}
+                                    <div class="meta-item">
+                                        <i data-feather="users" class="me-1"></i>
+                                        <span>Organized by {{ event.organizer }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="event-actions">
+                            {% if event.contact_info %}
+                            <button class="btn btn-outline-primary btn-sm" onclick="showContactInfo('{{ event.title }}', '{{ event.contact_info }}')">
+                                <i data-feather="phone" class="me-1"></i>
+                                Contact
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-primary btn-sm" onclick="addToCalendar('{{ event.title }}', '{{ event.date.isoformat() }}', '{{ event.location or '' }}', '{{ event.description or '' }}')">
+                                <i data-feather="plus" class="me-1"></i>
+                                Add to Calendar
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Past Events -->
+    {% if past_events %}
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="events-section">
+                <h3 class="section-title">
+                    <i data-feather="archive" class="me-2"></i>
+                    Recent Past Events
+                </h3>
+                <div class="past-events-list">
+                    {% for event in past_events %}
+                    <div class="past-event-item">
+                        <div class="past-event-date">
+                            {{ event.date.strftime('%b %d, %Y') }}
+                        </div>
+                        <div class="past-event-content">
+                            <h5>{{ event.title }}</h5>
+                            {% if event.description %}
+                            <p class="text-muted">{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+                            {% endif %}
+                            {% if event.location %}
+                            <small class="text-muted">
+                                <i data-feather="map-pin" class="me-1"></i>
+                                {{ event.location }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- No Events State -->
+    {% if not upcoming_events and not past_events %}
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="empty-state text-center py-5">
+                <i data-feather="calendar" class="empty-icon"></i>
+                <h4>No Events Scheduled</h4>
+                <p class="text-muted">Community events are being planned and will be posted here. Check back soon!</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Event Categories Info -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="event-categories">
+                <h4 class="mb-4 text-center">Types of Community Events</h4>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="category-info-card">
+                            <div class="category-icon">
+                                <i data-feather="star"></i>
+                            </div>
+                            <h5>Cultural Events</h5>
+                            <p>Traditional festivals, folk dance performances, music concerts, and cultural celebrations.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="category-info-card">
+                            <div class="category-icon">
+                                <i data-feather="book-open"></i>
+                            </div>
+                            <h5>Educational Programs</h5>
+                            <p>Language classes, history workshops, cultural education, and skill-building sessions.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="category-info-card">
+                            <div class="category-icon">
+                                <i data-feather="heart"></i>
+                            </div>
+                            <h5>Social Gatherings</h5>
+                            <p>Community meetings, social hours, family events, and networking opportunities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event CTA -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="add-event-cta">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4>Hosting an Event?</h4>
+                        <p class="lead">Share your Ukrainian community event with others. Help build our community calendar.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('admin') }}" class="btn btn-primary btn-lg">
+                            <i data-feather="plus" class="me-2"></i>
+                            Add Event
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Info Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Event Contact Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6 id="contactEventTitle"></h6>
+                <div id="contactEventInfo"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showContactInfo(eventTitle, contactInfo) {
+    document.getElementById('contactEventTitle').textContent = eventTitle;
+    document.getElementById('contactEventInfo').innerHTML = contactInfo.replace(/\n/g, '<br>');
+    
+    const modal = new bootstrap.Modal(document.getElementById('contactModal'));
+    modal.show();
+}
+
+function addToCalendar(title, dateIso, location, description) {
+    // Create a basic calendar event URL (Google Calendar)
+    const startDate = new Date(dateIso);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours
+    
+    const formatDate = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+    
+    const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: title,
+        dates: `${formatDate(startDate)}/${formatDate(endDate)}`,
+        details: description,
+        location: location
+    });
+    
+    const calendarUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
+    
+    // Try to open in new window, fallback to current window
+    const newWindow = window.open(calendarUrl, '_blank');
+    if (!newWindow) {
+        window.location.href = calendarUrl;
+    }
+}
+
+// Add smooth scrolling for internal links
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate event cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all event cards
+    document.querySelectorAll('.event-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

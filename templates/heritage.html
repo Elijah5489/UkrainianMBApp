@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Heritage - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i data-feather="archive" class="me-3"></i>
+                Ukrainian Heritage
+            </h1>
+            <p class="lead">Discover the rich history, culture, and traditions of Ukrainian-Manitobans. Learn about the pioneers who helped build this community and the heritage that continues today.</p>
+        </div>
+    </div>
+
+    <!-- Timeline Overview -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="heritage-timeline">
+                <h4 class="text-center mb-4">Heritage Timeline</h4>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">1890s</div>
+                        <div class="timeline-content">
+                            <h5>First Wave of Immigration</h5>
+                            <p>Ukrainian settlers arrive in Manitoba seeking farmland and freedom.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">1900s</div>
+                        <div class="timeline-content">
+                            <h5>Community Building</h5>
+                            <p>Churches, schools, and cultural centers established throughout Manitoba.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">1940s-50s</div>
+                        <div class="timeline-content">
+                            <h5>Post-War Immigration</h5>
+                            <p>Second wave of Ukrainian immigrants revitalize the community.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">1990s</div>
+                        <div class="timeline-content">
+                            <h5>Modern Immigration</h5>
+                            <p>New immigrants from independent Ukraine bring fresh perspectives.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">Today</div>
+                        <div class="timeline-content">
+                            <h5>Continuing Legacy</h5>
+                            <p>Ongoing community growth and cultural preservation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="filter-section">
+                <h5 class="mb-3">Explore by Topic</h5>
+                <div class="category-filters">
+                    <a href="{{ url_for('heritage', category='all') }}" 
+                       class="btn btn-outline-primary category-btn {{ 'active' if selected_category == 'all' else '' }}">
+                        All Topics
+                    </a>
+                    {% for category in categories %}
+                    <a href="{{ url_for('heritage', category=category) }}" 
+                       class="btn btn-outline-primary category-btn {{ 'active' if selected_category == category else '' }}">
+                        {{ category.title() }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heritage Content -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            {% if heritage_info %}
+                <div class="heritage-grid">
+                    {% for item in heritage_info %}
+                    <div class="heritage-card" data-category="{{ item.category }}">
+                        <div class="heritage-card-header">
+                            <div class="heritage-meta">
+                                <span class="category-badge badge bg-secondary">{{ item.category.title() }}</span>
+                                {% if item.historical_period %}
+                                <span class="period-badge badge bg-outline-primary">{{ item.historical_period }}</span>
+                                {% endif %}
+                            </div>
+                            <h4>{{ item.title }}</h4>
+                        </div>
+                        
+                        <div class="heritage-card-content">
+                            <div class="content-text">
+                                {{ item.content | safe }}
+                            </div>
+                            
+                            {% if item.historical_period %}
+                            <div class="historical-context mt-3">
+                                <h6><i data-feather="clock" class="me-1"></i>Historical Period</h6>
+                                <p class="text-muted">{{ item.historical_period }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="heritage-card-footer">
+                            <button class="btn btn-outline-primary btn-sm" onclick="shareHeritage('{{ item.title }}')">
+                                <i data-feather="share-2" class="me-1"></i>
+                                Share
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="readAloud('{{ item.content | striptags | replace("'", "\\'") }}')">
+                                <i data-feather="volume-2" class="me-1"></i>
+                                Listen
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state text-center py-5">
+                    <i data-feather="archive" class="empty-icon"></i>
+                    <h4>No Heritage Information Found</h4>
+                    <p class="text-muted">
+                        {% if selected_category != 'all' %}
+                            No heritage information found in the "{{ selected_category.title() }}" category.
+                        {% else %}
+                            Heritage information is being compiled and will be available soon.
+                        {% endif %}
+                    </p>
+                    {% if selected_category != 'all' %}
+                    <a href="{{ url_for('heritage', category='all') }}" class="btn btn-primary">
+                        View All Topics
+                    </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Cultural Highlights -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="cultural-highlights">
+                <h4 class="mb-4 text-center">Cultural Highlights</h4>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="highlight-card">
+                            <div class="highlight-icon">
+                                <i data-feather="music"></i>
+                            </div>
+                            <h5>Traditional Music</h5>
+                            <p>Rich folk music traditions including bandura, kobza, and choral singing that continue to thrive in Manitoba's Ukrainian community.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="highlight-card">
+                            <div class="highlight-icon">
+                                <i data-feather="star"></i>
+                            </div>
+                            <h5>Folk Dance</h5>
+                            <p>Colorful traditional dances like the Hopak and Kolomyika, performed at cultural events and festivals throughout the year.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="highlight-card">
+                            <div class="highlight-icon">
+                                <i data-feather="home"></i>
+                            </div>
+                            <h5>Architecture</h5>
+                            <p>Distinctive church architecture and traditional building styles that mark Ukrainian settlements across Manitoba.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heritage Resources -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="heritage-resources">
+                <h4 class="mb-4">Heritage Resources</h4>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h5><i data-feather="book" class="me-2"></i>Research Libraries</h5>
+                            <p>Access historical documents, photographs, and genealogical resources to explore your family's Ukrainian heritage.</p>
+                            <ul class="resource-list">
+                                <li>Manitoba Archives</li>
+                                <li>Ukrainian Cultural Heritage Village</li>
+                                <li>University of Manitoba Libraries</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="resource-card">
+                            <h5><i data-feather="camera" class="me-2"></i>Museums & Exhibitions</h5>
+                            <p>Visit museums and cultural centers that preserve and display Ukrainian heritage artifacts and stories.</p>
+                            <ul class="resource-list">
+                                <li>Ukrainian Museum of Canada</li>
+                                <li>Manitoba Museum</li>
+                                <li>Local cultural centers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contribute Section -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="contribute-section">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4>Preserve Heritage</h4>
+                        <p class="lead">Help preserve Ukrainian heritage by sharing family stories, historical information, or cultural knowledge.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('admin') }}" class="btn btn-primary btn-lg">
+                            <i data-feather="plus" class="me-2"></i>
+                            Contribute Story
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function shareHeritage(title) {
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: `Learn about ${title} - Ukrainian heritage in Manitoba`,
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        // Fallback: copy to clipboard
+        const url = window.location.href;
+        navigator.clipboard.writeText(`${title} - ${url}`).then(() => {
+            showToast('Link copied to clipboard!');
+        });
+    }
+}
+
+function readAloud(text) {
+    if ('speechSynthesis' in window) {
+        // Stop any current speech
+        speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        utterance.pitch = 1;
+        
+        utterance.onstart = function() {
+            showToast('Reading heritage information...');
+        };
+        
+        utterance.onend = function() {
+            showToast('Finished reading.');
+        };
+        
+        speechSynthesis.speak(utterance);
+    } else {
+        showToast('Text-to-speech is not supported in your browser.');
+    }
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 5px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

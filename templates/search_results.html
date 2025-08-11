@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <h1 class="display-6 fw-bold mb-3">
+                <i data-feather="search" class="me-3"></i>
+                Search Results
+            </h1>
+            <p class="lead">
+                {% if query %}
+                    Showing results for: <strong>"{{ query }}"</strong>
+                {% else %}
+                    Please enter a search term.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    {% if query %}
+        <!-- Search Summary -->
+        <div class="row mb-4">
+            <div class="col-lg-10 mx-auto">
+                <div class="search-summary">
+                    {% set total_results = (translation_results|length) + (community_results|length) + (heritage_results|length) + (event_results|length) + (resource_results|length) %}
+                    <p class="text-muted">
+                        Found {{ total_results }} result{{ 's' if total_results != 1 else '' }} across all content types.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Sections -->
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                
+                <!-- Translation Results -->
+                {% if translation_results %}
+                <div class="search-results-section mb-5">
+                    <h3 class="section-title">
+                        <i data-feather="message-circle" class="me-2"></i>
+                        Translations ({{ translation_results|length }})
+                    </h3>
+                    <div class="results-grid">
+                        {% for translation in translation_results %}
+                        <div class="result-card translation-result">
+                            <div class="result-header">
+                                <span class="result-type badge bg-primary">Translation</span>
+                                <span class="result-category badge bg-secondary">{{ translation.category.title() }}</span>
+                            </div>
+                            <div class="result-content">
+                                <div class="translation-pair">
+                                    <div class="ukrainian-text">
+                                        <strong>🇺🇦 {{ translation.ukrainian }}</strong>
+                                    </div>
+                                    <div class="english-text">
+                                        <strong>🇨🇦 {{ translation.english }}</strong>
+                                    </div>
+                                    {% if translation.pronunciation %}
+                                    <div class="pronunciation-text">
+                                        <em>Pronunciation: {{ translation.pronunciation }}</em>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="result-actions">
+                                <button class="btn btn-sm btn-outline-primary" onclick="speakText('{{ translation.english }}')">
+                                    <i data-feather="volume-2" class="me-1"></i>
+                                    Listen
+                                </button>
+                                <a href="{{ url_for('translator') }}?category={{ translation.category }}" class="btn btn-sm btn-outline-secondary">
+                                    View Category
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Community Results -->
+                {% if community_results %}
+                <div class="search-results-section mb-5">
+                    <h3 class="section-title">
+                        <i data-feather="users" class="me-2"></i>
+                        Community Organizations ({{ community_results|length }})
+                    </h3>
+                    <div class="results-grid">
+                        {% for org in community_results %}
+                        <div class="result-card community-result">
+                            <div class="result-header">
+                                <span class="result-type badge bg-success">Community</span>
+                                <span class="result-category badge bg-secondary">{{ org.category.replace('_', ' ').title() }}</span>
+                            </div>
+                            <div class="result-content">
+                                <h5>{{ org.title }}</h5>
+                                <p>{{ org.content[:150] }}{% if org.content|length > 150 %}...{% endif %}</p>
+                                {% if org.address or org.phone %}
+                                <div class="contact-info">
+                                    {% if org.address %}
+                                    <small class="text-muted">
+                                        <i data-feather="map-pin" class="me-1"></i>
+                                        {{ org.address }}
+                                    </small>
+                                    {% endif %}
+                                    {% if org.phone %}
+                                    <small class="text-muted">
+                                        <i data-feather="phone" class="me-1"></i>
+                                        {{ org.phone }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="result-actions">
+                                <a href="{{ url_for('community') }}#org-{{ org.id }}" class="btn btn-sm btn-outline-primary">
+                                    View Details
+                                </a>
+                                {% if org.phone %}
+                                <a href="tel:{{ org.phone }}" class="btn btn-sm btn-success">
+                                    <i data-feather="phone" class="me-1"></i>
+                                    Call
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Heritage Results -->
+                {% if heritage_results %}
+                <div class="search-results-section mb-5">
+                    <h3 class="section-title">
+                        <i data-feather="archive" class="me-2"></i>
+                        Heritage Information ({{ heritage_results|length }})
+                    </h3>
+                    <div class="results-grid">
+                        {% for heritage in heritage_results %}
+                        <div class="result-card heritage-result">
+                            <div class="result-header">
+                                <span class="result-type badge bg-warning">Heritage</span>
+                                <span class="result-category badge bg-secondary">{{ heritage.category.title() }}</span>
+                                {% if heritage.historical_period %}
+                                <span class="result-period badge bg-outline-primary">{{ heritage.historical_period }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="result-content">
+                                <h5>{{ heritage.title }}</h5>
+                                <p>{{ heritage.content[:150] }}{% if heritage.content|length > 150 %}...{% endif %}</p>
+                            </div>
+                            <div class="result-actions">
+                                <a href="{{ url_for('heritage') }}#heritage-{{ heritage.id }}" class="btn btn-sm btn-outline-primary">
+                                    Read More
+                                </a>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="readAloud('{{ heritage.content | striptags | replace("'", "\\'") }}')">
+                                    <i data-feather="volume-2" class="me-1"></i>
+                                    Listen
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Event Results -->
+                {% if event_results %}
+                <div class="search-results-section mb-5">
+                    <h3 class="section-title">
+                        <i data-feather="calendar" class="me-2"></i>
+                        Events ({{ event_results|length }})
+                    </h3>
+                    <div class="results-grid">
+                        {% for event in event_results %}
+                        <div class="result-card event-result">
+                            <div class="result-header">
+                                <span class="result-type badge bg-info">Event</span>
+                                {% if event.category %}
+                                <span class="result-category badge bg-secondary">{{ event.category.title() }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="result-content">
+                                <h5>{{ event.title }}</h5>
+                                {% if event.description %}
+                                <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+                                {% endif %}
+                                <div class="event-meta">
+                                    <small class="text-muted">
+                                        <i data-feather="calendar" class="me-1"></i>
+                                        {{ event.date.strftime('%B %d, %Y at %I:%M %p') }}
+                                    </small>
+                                    {% if event.location %}
+                                    <small class="text-muted">
+                                        <i data-feather="map-pin" class="me-1"></i>
+                                        {{ event.location }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="result-actions">
+                                <a href="{{ url_for('events') }}#event-{{ event.id }}" class="btn btn-sm btn-outline-primary">
+                                    View Event
+                                </a>
+                                {% if event.date >= moment() %}
+                                <button class="btn btn-sm btn-info" onclick="addToCalendar('{{ event.title }}', '{{ event.date.isoformat() }}', '{{ event.location or '' }}', '{{ event.description or '' }}')">
+                                    <i data-feather="plus" class="me-1"></i>
+                                    Add to Calendar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Resource Results -->
+                {% if resource_results %}
+                <div class="search-results-section mb-5">
+                    <h3 class="section-title">
+                        <i data-feather="info" class="me-2"></i>
+                        Resources ({{ resource_results|length }})
+                    </h3>
+                    <div class="results-grid">
+                        {% for resource in resource_results %}
+                        <div class="result-card resource-result">
+                            <div class="result-header">
+                                <span class="result-type badge bg-dark">Resource</span>
+                                <span class="result-category badge bg-secondary">{{ resource.category.replace('_', ' ').title() }}</span>
+                            </div>
+                            <div class="result-content">
+                                <h5>{{ resource.title }}</h5>
+                                {% if resource.description %}
+                                <p>{{ resource.description[:150] }}{% if resource.description|length > 150 %}...{% endif %}</p>
+                                {% endif %}
+                                {% if resource.address or resource.phone or resource.hours %}
+                                <div class="contact-info">
+                                    {% if resource.address %}
+                                    <small class="text-muted">
+                                        <i data-feather="map-pin" class="me-1"></i>
+                                        {{ resource.address }}
+                                    </small>
+                                    {% endif %}
+                                    {% if resource.hours %}
+                                    <small class="text-muted">
+                                        <i data-feather="clock" class="me-1"></i>
+                                        {{ resource.hours }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="result-actions">
+                                <a href="{{ url_for('resources') }}#resource-{{ resource.id }}" class="btn btn-sm btn-outline-primary">
+                                    View Details
+                                </a>
+                                {% if resource.phone %}
+                                <a href="tel:{{ resource.phone }}" class="btn btn-sm btn-success">
+                                    <i data-feather="phone" class="me-1"></i>
+                                    Call
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- No Results -->
+                {% if not translation_results and not community_results and not heritage_results and not event_results and not resource_results %}
+                <div class="no-results text-center py-5">
+                    <i data-feather="search" class="empty-icon"></i>
+                    <h4>No Results Found</h4>
+                    <p class="text-muted">No content found matching "{{ query }}". Try:</p>
+                    <ul class="list-unstyled">
+                        <li>• Using different keywords</li>
+                        <li>• Checking for spelling errors</li>
+                        <li>• Using more general terms</li>
+                        <li>• Searching in Ukrainian or English</li>
+                    </ul>
+                    <div class="mt-4">
+                        <a href="{{ url_for('translator') }}" class="btn btn-primary me-2">
+                            Try Voice Translator
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        speechSynthesis.speak(utterance);
+    }
+}
+
+function readAloud(text) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        speechSynthesis.speak(utterance);
+    }
+}
+
+function addToCalendar(title, dateIso, location, description) {
+    const startDate = new Date(dateIso);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+    
+    const formatDate = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+    
+    const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: title,
+        dates: `${formatDate(startDate)}/${formatDate(endDate)}`,
+        details: description,
+        location: location
+    });
+    
+    const calendarUrl = `https://calendar.google.com/calendar/render?${params.toString()}`;
+    window.open(calendarUrl, '_blank');
+}
+
+// Highlight search terms in results
+document.addEventListener('DOMContentLoaded', function() {
+    const query = '{{ query }}';
+    if (query && query.length > 2) {
+        highlightText(query);
+    }
+});
+
+function highlightText(searchTerm) {
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const elements = document.querySelectorAll('.result-content h5, .result-content p');
+    
+    elements.forEach(element => {
+        if (element.innerHTML.toLowerCase().includes(searchTerm.toLowerCase())) {
+            element.innerHTML = element.innerHTML.replace(regex, '<mark>$1</mark>');
+        }
+    });
+}
+</script>
+{% endblock %}

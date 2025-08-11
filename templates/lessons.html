@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Language Lessons - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i data-feather="book-open" class="me-3"></i>
+                English Language Lessons
+            </h1>
+            <p class="lead">Structured lessons to help you learn English while maintaining your Ukrainian heritage. From basic alphabet to advanced conversation skills.</p>
+        </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="progress-overview">
+                <h4 class="mb-4">Your Learning Path</h4>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="level-card beginner-level">
+                            <div class="level-icon">
+                                <i data-feather="smile"></i>
+                            </div>
+                            <h5>Beginner</h5>
+                            <p>Alphabet, basic greetings, essential phrases</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="level-card intermediate-level">
+                            <div class="level-icon">
+                                <i data-feather="trending-up"></i>
+                            </div>
+                            <h5>Intermediate</h5>
+                            <p>Grammar, conversation, practical situations</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="level-card advanced-level">
+                            <div class="level-icon">
+                                <i data-feather="award"></i>
+                            </div>
+                            <h5>Advanced</h5>
+                            <p>Complex grammar, professional communication</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" style="width: 20%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lessons List -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="lessons-grid">
+                {% if lessons %}
+                    {% for lesson in lessons %}
+                    <div class="lesson-card" data-level="{{ lesson.level }}">
+                        <div class="lesson-header">
+                            <div class="lesson-level">
+                                <span class="badge bg-{{ 'success' if lesson.level == 'beginner' else 'warning' if lesson.level == 'intermediate' else 'info' }}">
+                                    {{ lesson.level.title() }}
+                                </span>
+                            </div>
+                            <div class="lesson-number">{{ loop.index }}</div>
+                        </div>
+                        
+                        <div class="lesson-content">
+                            <h4>{{ lesson.title }}</h4>
+                            <p class="lesson-description">{{ lesson.description }}</p>
+                            
+                            <div class="lesson-meta">
+                                <div class="lesson-duration">
+                                    <i data-feather="clock" class="me-1"></i>
+                                    <span>15-20 min</span>
+                                </div>
+                                <div class="lesson-difficulty">
+                                    <i data-feather="bar-chart-2" class="me-1"></i>
+                                    <span>{{ lesson.level.title() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="lesson-footer">
+                            <a href="{{ url_for('lesson_detail', lesson_id=lesson.id) }}" class="btn btn-primary">
+                                Start Lesson
+                                <i data-feather="arrow-right" class="ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state text-center py-5">
+                        <i data-feather="book" class="empty-icon"></i>
+                        <h4>No Lessons Available</h4>
+                        <p class="text-muted">Lessons are being prepared and will be available soon.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Practice Section -->
+    <div class="row mt-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="quick-practice-section">
+                <h4 class="mb-4">Quick Practice</h4>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="practice-card">
+                            <div class="practice-icon">
+                                <i data-feather="headphones"></i>
+                            </div>
+                            <h5>Pronunciation Practice</h5>
+                            <p>Practice pronouncing common English words and phrases with audio feedback.</p>
+                            <button class="btn btn-outline-primary" onclick="startPronunciationPractice()">
+                                Start Practice
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="practice-card">
+                            <div class="practice-icon">
+                                <i data-feather="edit-3"></i>
+                            </div>
+                            <h5>Vocabulary Quiz</h5>
+                            <p>Test your knowledge with interactive vocabulary quizzes based on your level.</p>
+                            <button class="btn btn-outline-primary" onclick="startVocabularyQuiz()">
+                                Take Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Practice Modal -->
+<div class="modal fade" id="practiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Practice Session</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="practiceContent">
+                    <!-- Practice content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/lessons.js') }}"></script>
+{% endblock %}

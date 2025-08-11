@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Voice Translator - Ukrainian Winnipeg{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-5 fw-bold mb-3">
+                <i data-feather="mic" class="me-3"></i>
+                Voice Translator
+            </h1>
+            <p class="lead">Speak in Ukrainian and hear the English translation instantly. Perfect for emergency situations, healthcare visits, and daily conversations.</p>
+        </div>
+    </div>
+
+    <!-- Voice Translation Interface -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="translator-interface">
+                <div class="row g-4">
+                    <!-- Ukrainian Input -->
+                    <div class="col-md-6">
+                        <div class="translation-panel ukrainian-panel">
+                            <div class="panel-header">
+                                <h4>
+                                    <span class="flag-icon">🇺🇦</span>
+                                    Українська
+                                </h4>
+                            </div>
+                            <div class="panel-content">
+                                <textarea id="ukrainianText" class="form-control translation-textarea" 
+                                         placeholder="Говоріть або введіть текст українською..."></textarea>
+                                <div class="panel-controls">
+                                    <button id="listenUkrainian" class="btn btn-primary">
+                                        <i data-feather="mic" class="me-1"></i>
+                                        Слухати
+                                    </button>
+                                    <button id="clearUkrainian" class="btn btn-outline-secondary">
+                                        <i data-feather="x" class="me-1"></i>
+                                        Очистити
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- English Output -->
+                    <div class="col-md-6">
+                        <div class="translation-panel english-panel">
+                            <div class="panel-header">
+                                <h4>
+                                    <span class="flag-icon">🇨🇦</span>
+                                    English
+                                </h4>
+                            </div>
+                            <div class="panel-content">
+                                <textarea id="englishText" class="form-control translation-textarea" 
+                                         placeholder="Translation will appear here..." readonly></textarea>
+                                <div class="panel-controls">
+                                    <button id="speakEnglish" class="btn btn-success" disabled>
+                                        <i data-feather="volume-2" class="me-1"></i>
+                                        Speak
+                                    </button>
+                                    <button id="copyEnglish" class="btn btn-outline-secondary" disabled>
+                                        <i data-feather="copy" class="me-1"></i>
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Translation Status -->
+                <div class="translation-status mt-3">
+                    <div id="listeningIndicator" class="status-indicator d-none">
+                        <div class="pulse-animation"></div>
+                        <span>Listening...</span>
+                    </div>
+                    <div id="translatingIndicator" class="status-indicator d-none">
+                        <div class="spinner-border spinner-border-sm me-2"></div>
+                        <span>Translating...</span>
+                    </div>
+                    <div id="errorMessage" class="alert alert-danger d-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="filter-section">
+                <h5 class="mb-3">Browse by Category</h5>
+                <div class="category-filters">
+                    <button class="btn btn-outline-primary category-btn active" data-category="all">
+                        All Categories
+                    </button>
+                    {% for category in categories %}
+                    <button class="btn btn-outline-primary category-btn" data-category="{{ category }}">
+                        {{ category.title() }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="search-section">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i data-feather="search"></i>
+                    </span>
+                    <input type="text" id="searchInput" class="form-control" 
+                           placeholder="Search phrases in Ukrainian or English...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrase List -->
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="phrase-list-section">
+                <h5 class="mb-3">Common Phrases</h5>
+                <div id="phraseList" class="phrase-list">
+                    <!-- Phrases will be loaded here -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading phrases...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/translator.js') }}"></script>
+{% endblock %}
